@@ -1,0 +1,56 @@
+- name: Install Jenkins 2.9
+  hosts: rhel-dev-1
+  become: yes
+  tasks:
+    - name: Add Jenkins repository
+      rpm_key:
+        key: https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
+        state: present
+
+    - name: Add Jenkins repository
+      copy:
+        dest: /etc/yum.repos.d/jenkins.repo
+        content: |
+          [jenkins]
+          name=Jenkins
+          baseurl=https://pkg.jenkins.io/redhat
+          gpgcheck=1
+          enabled=1
+
+    - name: Update packages list
+      yum:
+        name: "*"
+        update_cache: yes
+        state: latest
+
+    - name: Install Jenkins dependencies
+      package:
+        name: 
+          - java-17-openjdk
+          - fontconfig
+        state: present
+
+    - name: Install Jenkins
+      package:
+        name: jenkins
+        state: present
+  
+    - name: Start Jenkins service
+      service:
+        name: jenkins
+        state: started
+        enabled: yes
+    
+    - name: Add firewall rule for Jenkins
+      firewalld:
+        port: 8080/tcp
+        zone: public
+        permanent: true
+        immediate: true
+        state: enabled
+
+    - name: Ensure Jenkins is running
+      uri:
+        url: http://localhost:8080/login
+        status_code: 200
+        timeout: 30

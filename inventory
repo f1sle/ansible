@@ -1,0 +1,10 @@
+[ubuntu]
+ubuntu-dev-2
+
+[rhel]
+rhel-dev-1 ansible_python_interpreter=/usr/bin/python3
+rhel-dev-2 ansible_python_interpreter=/usr/bin/python3
+rhel-dev-3 ansible_python_interpreter=/usr/bin/python3
+
+[jenkins]
+jenkins
